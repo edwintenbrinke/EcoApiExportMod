@@ -1,9 +1,6 @@
 ﻿using Eco.Core.Plugins.Interfaces;
 using Eco.Core.Utils;
-using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace Eco.Plugins.EcoApiExportMod
@@ -13,6 +10,19 @@ namespace Eco.Plugins.EcoApiExportMod
         public string api_access_token { get; set; }
         public int timeout { get; set; }
         public string api_url { get; set; }
+    }
+
+    public class data_models
+    {
+        public int _id { get; set; }
+        public int TimeSeconds { get; set; }
+        public string Username { get; set; }
+        public Guid AuthId { get; set; }
+        public Guid WorldObjectId { get; set; }
+        public double Value { get; set; }
+        public string ItemTypeName { get; set; }
+        public string SpeciesName { get; set; }
+        public string WorldObjectTypeName { get; set; }
     }
 
     public class Initializer : IModKitPlugin, IInitializablePlugin
@@ -37,7 +47,6 @@ namespace Eco.Plugins.EcoApiExportMod
 
         public void Initialize(TimedTask timer)
         {
-            Logger.DebugVerbose("initializing");
             try
             {
                 new Thread(() => { collector.collect(); })
@@ -49,6 +58,11 @@ namespace Eco.Plugins.EcoApiExportMod
             {
                 Logger.Error(ex.Message);
             }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

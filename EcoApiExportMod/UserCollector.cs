@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Eco.Plugins.EcoApiExportMod
 {
+
     public class api_user
     {
         public int? id { get; set; }
@@ -18,6 +19,10 @@ namespace Eco.Plugins.EcoApiExportMod
 
     class UserCollector
     {
+        public static User GetUserByName(string UserName) => UserManager.FindUserByName(UserName);
+        public static Player GetPlayerByName(string PlayerName) => GetUserByName(PlayerName).Player;
+        public static User GetUser(string Filter) => UserManager.Users.FirstOrDefault(u => u.Name == Filter || u.SlgId == Filter || u.SteamId == Filter);
+
         private TradeCollector trade_collector;
 
         public UserCollector()
@@ -27,6 +32,7 @@ namespace Eco.Plugins.EcoApiExportMod
 
         public List<api_user> collect()
         {
+
             List<api_user> api_users = new List<api_user>();
             List<User> eco_users = UserManager.Users.ToList();
             if (eco_users != null && eco_users.Count > 0)
@@ -37,7 +43,6 @@ namespace Eco.Plugins.EcoApiExportMod
                 foreach (User user in eco_users)
                 {
                     bool user_online_status = false;
-                    Logger.Debug($"online: {online_users.Count().ToString()}");
                     if (online_users.Count() > 0 && user.Name != null)
                     {
                         user_online_status = online_users.Contains(user.Name);
@@ -60,7 +65,7 @@ namespace Eco.Plugins.EcoApiExportMod
             {
                 return new List<api_user>();
             }
-           
+
 
             return api_users;
         }

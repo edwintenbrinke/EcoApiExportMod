@@ -29,7 +29,6 @@ namespace Eco.Plugins.EcoApiExportMod
         static config getConfigData()
         {
             // load config file
-            Logger.Debug("loading config data");
             string config_file_location = string.Format("{0}Mods/EcoApiExportMod/{1}", AppDomain.CurrentDomain.BaseDirectory, config_file_name);
             if (!File.Exists(config_file_location))
             {
@@ -53,21 +52,17 @@ namespace Eco.Plugins.EcoApiExportMod
             {
                 config config_data = getConfigData();
                 // find if server is running check
-                Thread.Sleep(config_data.timeout);
-                Logger.Debug("collecting");
 
                 try
                 {
                     List<dynamic> api_data = new List<dynamic>();
 
                     // get users
-                    Logger.Debug("collecting users");
                     Dictionary<string, List<api_user>> api_users = new Dictionary<string, List<api_user>>();
                     api_users.Add("users", user_collector.collect());
                     api_data.Add(api_users);
 
                     // get server_info
-                    Logger.Debug("collecting server info");
                     Dictionary<string, api_server> api_server = new Dictionary<string, api_server>();
                     api_server.Add("server", server_collector.collect());
                     api_data.Add(api_server);
@@ -78,6 +73,8 @@ namespace Eco.Plugins.EcoApiExportMod
                 {
                     Logger.Error(ex.Message);
                 }
+
+                Thread.Sleep(config_data.timeout);
             }
         }
 
@@ -85,7 +82,6 @@ namespace Eco.Plugins.EcoApiExportMod
         static void postData(config config_data, List<dynamic> post_data)
         {
             //string data = JsonConvert.SerializeObject(post_data);
-            Logger.Debug(string.Format("posting data to {0}", config_data.api_url));
             using (WebClient wc = new WebClient())
             {
                 // set it so the api knows that type of data is being received
@@ -96,7 +92,6 @@ namespace Eco.Plugins.EcoApiExportMod
                     config_data.api_url,
                     JsonConvert.SerializeObject(post_data)
                 );
-                Logger.Debug("posted to api");
             }
         }
     }
