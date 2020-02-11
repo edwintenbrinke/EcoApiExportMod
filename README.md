@@ -8,3 +8,4 @@
 - export logs from backup in sperate thread
 - trade history/ how many sold & bought etc mutations
 - BNP?
+- user inventory?
