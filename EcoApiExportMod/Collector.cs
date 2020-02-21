@@ -11,14 +11,17 @@ namespace Eco.Plugins.EcoApiExportMod
     public class Collector
     {
         public const string config_file_name = "config.json";
+        public string base_mod_path;
         private int POLL_DELAY;
         private UserCollector user_collector;
         private ServerCollector server_collector;
+        private DatabaseCollector database_collector;
 
         public Collector()
         {
             user_collector = new UserCollector();
             server_collector = new ServerCollector();
+            database_collector = new DatabaseCollector();
         }
 
         public static string FirstNonEmptyString(params string[] strings)
@@ -26,11 +29,11 @@ namespace Eco.Plugins.EcoApiExportMod
             return strings.FirstOrDefault(str => !String.IsNullOrEmpty(str)) ?? "";
         }
 
-        static config getConfigData()
+        public static config getConfigData(string base_path)
         {
+            Logger.Debug("Loading config");
             // load config file
-            Logger.Debug("loading config data");
-            string config_file_location = string.Format("{0}{1}", base_mod_path, config_file_name);
+            string config_file_location = string.Format("{0}{1}", base_path, config_file_name);
             string config_json = File.ReadAllText(config_file_location);
             return JsonConvert.DeserializeObject<config>(config_json);
         }
@@ -39,30 +42,32 @@ namespace Eco.Plugins.EcoApiExportMod
         {
             while (true)
             {
-                config config_data = getConfigData();
+                config config_data = getConfigData(string.Format("{0}Mods/EcoApiExportMod/", AppDomain.CurrentDomain.BaseDirectory));
+                Logger.debug = config_data.debug;
                 // find if server is running check
-                Logger.Debug("collecting");
                 try
                 {
+                    // handle game data
                     List<dynamic> api_data = new List<dynamic>();
 
                     // get users
-                    Logger.Debug("collecting users");
                     Dictionary<string, List<api_user>> api_users = new Dictionary<string, List<api_user>>();
                     api_users.Add("users", user_collector.collect());
                     api_data.Add(api_users);
 
                     // get server_info
-                    Logger.Debug("collecting server info");
                     Dictionary<string, api_server> api_server = new Dictionary<string, api_server>();
                     api_server.Add("server", server_collector.collect());
                     api_data.Add(api_server);
 
                     Api.Post("/api/eco/mod/data", config_data, api_data);
+
+                    // handle database data
+                    database_collector.collect(config_data);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex.Message);
+                    Logger.Debug(ex.Message);
                 }
 
                 Thread.Sleep(config_data.timeout);

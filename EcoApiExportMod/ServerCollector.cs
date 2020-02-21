@@ -1,4 +1,5 @@
 ﻿using Eco.Plugins.Networking;
+using Eco.Shared.Networking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,16 @@ namespace Eco.Plugins.EcoApiExportMod
     {
         public api_server collect()
         {
-            var server_info = NetworkManager.GetServerInfo();
+            ServerInfo server_info;
+            try
+            {
+                server_info = NetworkManager.GetServerInfo();
+            }
+            catch
+            {
+                return new api_server();
+            }
+
             return new api_server
             {
                 id = server_info.Id,

@@ -16,6 +16,7 @@ namespace Eco.Plugins.EcoApiExportMod
 
     public class formatted_offer
     {
+        public int? type_id { get; set; }
         public float price { get; set; }
         public int limit { get; set; }
         public bool buying { get; set; }
@@ -54,6 +55,7 @@ namespace Eco.Plugins.EcoApiExportMod
                         limit = r.Limit,
                         buying = r.Buying,
                         name = Collector.FirstNonEmptyString(r.Stack.Item.DisplayName, r.SelectedItem.Item.DisplayName),
+                        type_id = r.Stack.Item.TypeID,
                         min_durability = r.MinDurability,
                         has_min_durability = r.HasMinDurability,
                         is_set = r.IsSet,
